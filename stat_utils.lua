@@ -10,6 +10,8 @@ Includes logging reactor statistics and generating reports.
 
 local config = require("config").energyCore
 
+local stat_utils = {}
+
 -- Function to log errors
 function logError(err)
     local logFile = fs.open(config.logsFile, "a")
@@ -18,7 +20,7 @@ function logError(err)
 end
 
 -- Function to log reactor statistics
-function logReactorStats(reactor)
+function stat_utils.logReactorStats(reactor)
     local logFile = fs.open("reactor_stats.log", "a")
     local info = reactor.getReactorInfo()
     logFile.writeLine(os.date() .. ": " .. textutils.serialize(info))
@@ -26,7 +28,7 @@ function logReactorStats(reactor)
 end
 
 -- Function to log energy core statistics
-function logEnergyCoreStats(energyCore, inputRate, outputRate)
+function stat_utils.logEnergyCoreStats(energyCore, inputRate, outputRate)
     local logFile = fs.open("energy_core_stats.log", "a")
     local energyStored = energyCore.getEnergyStored()
     local maxEnergyStored = energyCore.getMaxEnergyStored()
@@ -34,3 +36,5 @@ function logEnergyCoreStats(energyCore, inputRate, outputRate)
     logFile.writeLine(os.date() .. ": Stored=" .. energyStored .. ", Max=" .. maxEnergyStored .. ", Transfer=" .. transferRate .. ", InputRate=" .. inputRate .. ", OutputRate=" .. outputRate)
     logFile.close()
 end
+
+return stat_utils

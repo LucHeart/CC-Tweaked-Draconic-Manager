@@ -10,6 +10,8 @@ Includes setup, error handling, and reactor status checks.
 
 local config = require("config").reactor
 
+local reac_utils = {}
+
 -- Peripherals
 local reactor
 local gateIn
@@ -36,7 +38,7 @@ function logError(err)
 end
 
 -- Peripheral identification function
-function periphSearch(type)
+function reac_utils.periphSearch(type)
     local names = peripheral.getNames()
     for _, name in pairs(names) do
         if peripheral.getType(name) == type then
@@ -47,7 +49,7 @@ function periphSearch(type)
 end
 
 -- Function to setup peripherals
-function setupPeripherals()
+function reac_utils.setupPeripherals()
     local peripherals = peripheral.getNames()
     
     for _, name in ipairs(peripherals) do
@@ -87,7 +89,7 @@ function setupPeripherals()
 end
 
 -- Function to get reactor status
-function getReactorStatus()
+function reac_utils.getReactorStatus()
     local success, status = pcall(function()
         return reactor.getReactorInfo().status
     end)
@@ -99,7 +101,7 @@ function getReactorStatus()
 end
 
 -- Function to get reactor temperature
-function getTemperature()
+function reac_utils.getTemperature()
     local success, temp = pcall(function()
         return reactor.getReactorInfo().temperature
     end)
@@ -111,7 +113,7 @@ function getTemperature()
 end
 
 -- Function to get reactor field strength
-function getFieldStrength()
+function reac_utils.getFieldStrength()
     local success, fieldStrength = pcall(function()
         return reactor.getReactorInfo().fieldStrength
     end)
@@ -123,7 +125,7 @@ function getFieldStrength()
 end
 
 -- Function to get reactor energy saturation
-function getEnergySaturation()
+function reac_utils.getEnergySaturation()
     local success, energySaturation = pcall(function()
         return reactor.getReactorInfo().energySaturation
     end)
@@ -135,7 +137,7 @@ function getEnergySaturation()
 end
 
 -- Function to set flux gate flow rate
-function setFluxGateFlowRate(channel, flowRate)
+function reac_utils.setFluxGateFlowRate(channel, flowRate)
     local success, result = pcall(function()
         channel.setSignalLowFlow(flowRate)
     end)
@@ -145,7 +147,7 @@ function setFluxGateFlowRate(channel, flowRate)
 end
 
 -- Function to perform fail-safe shutdown
-function failSafeShutdown()
+function reac_utils.failSafeShutdown()
     pcall(function()
         reactor.stopReactor()
         setFluxGateFlowRate(gateIn, config.shutDownField * 1.2)
@@ -154,7 +156,7 @@ function failSafeShutdown()
 end
 
 -- Setup function
-function setup()
+function reac_utils.setup()
     term.clear()
     print("Starting program...")
     setupPeripherals()
@@ -162,7 +164,7 @@ function setup()
 end
 
 -- Function to check reactor status
-function checkReactorStatus()
+function reac_utils.checkReactorStatus()
     local success, reactorInfo = pcall(function()
         return reactor.getReactorInfo()
     end)
@@ -177,7 +179,7 @@ function checkReactorStatus()
 end
 
 -- Function to determine if reactor is in emergency state
-function isEmergency()
+function reac_utils.isEmergency()
     currentEmergency = config.safeMode and info.temperature >= 2000.0 and 
         (info.status == "running" or info.status == "online" or info.status == "stopping") and 
         (info.temperature > config.defaultTemp + config.maxOvershoot or currentField < 0.004 or currentFuel < config.minFuel)
@@ -185,7 +187,7 @@ function isEmergency()
 end
 
 -- Function to adjust reactor temperature and field
-function adjustReactorTempAndField()
+function reac_utils.adjustReactorTempAndField()
     local temp = getTemperature()
     local tempInc = math.sqrt(config.defaultTemp - temp) / 2.0
     local newOutflow = math.min(config.maxOutflow, info.maxEnergySaturation * tempInc / 100)
@@ -202,7 +204,7 @@ function adjustReactorTempAndField()
 end
 
 -- Function to handle reactor stopping
-function handleReactorStopping()
+function reac_utils.handleReactorStopping()
     if currentField > config.shutDownField then
         setFluxGateFlowRate(gateIn, calcInflow(config.shutDownField, info.fieldDrainRate))
     else
@@ -217,7 +219,7 @@ function handleReactorStopping()
 end
 
 -- Function to update flux gates
-function updateFluxGates()
+function reac_utils.updateFluxGates()
     local newInflow = 0.0
     local newOutflow = 0.0
 
@@ -245,3 +247,5 @@ function updateFluxGates()
     setFluxGateFlowRate(gateIn, math.floor(newInflow))
     setFluxGateFlowRate(gateOut, math.floor(newOutflow * config.outputMultiplier))
 end
+
+return reac_utils

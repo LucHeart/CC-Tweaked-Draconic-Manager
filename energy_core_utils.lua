@@ -10,6 +10,8 @@ Includes setup, error handling, and energy core status checks.
 
 local config = require("config").energyCore
 
+local energy_core_utils = {}
+
 -- Peripheral and Configuration
 local monitor = peripheral.find("monitor")
 local energyCore = peripheral.find("draconic_rf_storage")
@@ -32,7 +34,7 @@ function drawText(x, y, text, textColor, bgColor)
 end
 
 -- Function to update the monitor with energy core status
-function updateMonitor()
+function energy_core_utils.updateMonitor()
     monitor.clear()
     local energyStored = energyCore.getEnergyStored()
     local maxEnergyStored = energyCore.getMaxEnergyStored()
@@ -45,7 +47,7 @@ function updateMonitor()
 end
 
 -- Function to log energy core statistics
-function logEnergyCoreStats()
+function energy_core_utils.logEnergyCoreStats()
     local logFile = fs.open("energy_core_stats.log", "a")
     local energyStored = energyCore.getEnergyStored()
     local maxEnergyStored = energyCore.getMaxEnergyStored()
@@ -55,7 +57,7 @@ function logEnergyCoreStats()
 end
 
 -- Function to handle click events on the monitor
-function clickListener()
+function energy_core_utils.clickListener()
     while true do
         local event, side, xPos, yPos = os.pullEvent("monitor_touch")
         if xPos >= 2 and xPos <= 9 and yPos >= 16 and yPos <= 18 then
@@ -65,3 +67,5 @@ function clickListener()
         end
     end
 end
+
+return energy_core_utils

@@ -24,9 +24,9 @@ To save configuration changes, edit the `config.lua` file and then restart the s
 ]]
 
 -- Import required libraries and scripts
-os.loadAPI("lib/reac_utils")
-os.loadAPI("lib/monitor_utils")
-os.loadAPI("lib/stat_utils")
+reac_utils = require("reac_utils")
+monitor_utils = require("monitor_utils")
+stat_utils = require("stat_utils")
 local config = require("config")
 
 -- Main loop
