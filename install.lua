@@ -4,13 +4,13 @@
 local files = {
     "config.lua",
     "main_control.lua",
-    "lib/reac_utils.lua",
-    "lib/monitor_utils.lua",
-    "lib/stat_utils.lua",
-    "lib/energy_core_utils.lua"
+    "reac_utils.lua",
+    "monitor_utils.lua",
+    "stat_utils.lua",
+    "energy_core_utils.lua"
 }
 
-local baseUrl = "https://raw.githubusercontent.com/owzo/CC-Tweaked-Draconic-Manager/main/"
+local baseUrl = "https://raw.githubusercontent.com/LucHeart/CC-Tweaked-Draconic-Manager/main/"
 
 for _, file in ipairs(files) do
     local url = baseUrl .. file
